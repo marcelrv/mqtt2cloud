@@ -15,6 +15,9 @@ MQTT2Cloud is a set of python daemons that will subscribe to an MQTT broker and 
 
 * requests [tempodb installs this]
 <pre>pip install requests</pre>
+or
+<pre>sudo apt-get install python-requests</pre>
+
 
 ## Install
 
