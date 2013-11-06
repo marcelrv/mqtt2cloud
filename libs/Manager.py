@@ -60,8 +60,11 @@ class Manager(Daemon):
         """
         self.topics = {}
         for topic, data in topics.iteritems():
-            feed, stream = data.split('/', 2)
-            self.topics[topic] = {'feed': feed, 'stream': stream}
+            try:
+                feed, stream = data.split('/', 2)
+                self.topics[topic] = {'feed': feed, 'stream': stream}
+            except ValueError:
+				self.topics[topic] = {'feed': data, 'stream': 'feed'}
 
     def cleanup(self):
         """
@@ -118,9 +121,14 @@ class Manager(Daemon):
                 message = ctypes.string_at(msg.payload, msg.payloadlen)
             except:
                 message = msg.payload
-            self.log("[DEBUG] Message routed from %s to %s:%s = %s" % (msg.topic, data['feed'], data['stream'], message))
+            
             try:
-                self.service.push(data['feed'], data['stream'], message)
+                if data['stream'] != 'feed':
+                   self.log("[DEBUG] Message routed from %s to %s:%s = %s" % (msg.topic, data['feed'], data['stream'], message))
+                   self.service.push(data['feed'], data['stream'], message)
+                else:
+                   self.log("[DEBUG] Message routed from %s to %s = %s" % (msg.topic, data['feed'], message))
+                   self.service.pushfeed(data['feed'], message)                    
             except Exception as e:
                 self.log("[ERROR] %s" % e)
 
