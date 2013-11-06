@@ -37,6 +37,7 @@ class Xively(CloudService):
 
     datapoints = []
     base_url = "https://api.xively.com/v2/feeds/%s/datastreams/%s.json"
+    base_url_feed = "https://api.xively.com/v2/feeds/%s"
 
     def __init__(self, api_key, timeout = None):
         """
@@ -60,6 +61,18 @@ class Xively(CloudService):
             url = self.base_url % (feed, datastream)
             data = json.dumps({'current_value' : value})
             response = requests.put(url, data=data, headers=self.headers(), timeout=self.timeout)
+            return response.status_code == 200
+        except:
+            return False
+
+    def pushfeed(self, feed, value):
+        """
+        Pushes a stream to the given feed/datastream
+        """
+        try:
+            url = self.base_url_feed % (feed)
+            #data = json.dumps({'current_value' : value})
+            response = requests.put(url, data=value, headers=self.headers(), timeout=self.timeout)
             return response.status_code == 200
         except:
             return False
