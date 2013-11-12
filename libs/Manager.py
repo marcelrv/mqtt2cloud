@@ -147,6 +147,9 @@ class Manager(Daemon):
         self.mqtt_connect()
 
         while True:
-            self.mqtt.loop()
-            self.service.loop()
+			try:
+				self.mqtt.loop()
+				self.service.loop()
+			except Exception as e:
+                self.log("[ERROR] %s" % e)
 
